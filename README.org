@@ -1,0 +1,108 @@
+#+TITLE: Advent of Code
+#+AUTHOR: Sszark
+#+STARTUP: showeverything
+Advent of Code is an Advent calendar of small programming puzzles for a 
+variety of skill sets and skill levels that can be solved in any 
+programming language you like. People use them as a speed contest, 
+interview prep, company training, university coursework, practice problems, 
+or to challenge each other.
+
+* Table of Content
+- [[#2020][2020]]
+  - [[#day-1][Day 1: Report Repair]]
+
+* 2020
+** Day 1: Report Repair
+https://adventofcode.com/2020/day/1
+
+**** Shared
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+use aoc_runner_derive::{aoc, aoc_generator};
+#+END_SRC
+
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+const TARGET: i32 = 2020;
+#+END_SRC
+
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+fn day1_find_pair(input: &[i32], target: i32) -> Result<(i32, i32), &'static str> {
+    for n in input.iter() {
+        // Determine twin size
+        let candidate = target - n;
+        // If the twin resides within the stack. The correct pair has been found.
+        if input.contains(&candidate) {
+            return Ok((*n, candidate))
+        }
+    }
+    Err("Could not a derive a pair from input. (bug in 'day1_find_pair')")
+}
+#+END_SRC
+
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+fn day1_find_triple(input: &[i32], target: i32) -> Result<(i32, i32, i32), &'static str> {
+    for (i, head) in input.iter().enumerate() {
+        // Slice that contains all values apart from the head position
+        let headless_input = [&input[..i], &input[i+1..]].concat();
+        // Subtract head value from the target to find a matching pair
+        if let Ok((a, b)) = day1_find_pair(&headless_input, target-head) {
+            return Ok((a, b, *head))
+        }
+    }
+    Err("Could not a derive a triple from input. (bug in 'day1_find_triple')")
+}
+#+END_SRC
+**** Input Generator
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+#[aoc_generator(day1)]
+pub fn input_generator(input: &str) -> Vec<i32> {
+    let mut x: Vec<i32> = input.lines().map(|x| x.parse().unwrap()).collect();
+    x.sort_unstable();
+    x
+}
+#+END_SRC
+**** Part One
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+#[aoc(day1, part1)]
+fn day1_part1(input: &[i32]) -> Result<i32, &'static str> {
+    match day1_find_pair(input, TARGET) {
+        Ok((a, b)) => Ok(a*b),
+        Err(err) => Err(err)
+    }
+}
+#+END_SRC
+**** Part Two
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+fn day1_part2(input: &[i32]) -> Result<i32, &'static str> {
+    match day1_find_triple(input, TARGET) {
+        Ok((a, b, head)) => Ok(a*b*head),
+        Err(err) => Err(err)
+    }
+}
+#+END_SRC
+**** Tests
+#+BEGIN_SRC rust :tangle 2020/day1.rs
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1() {
+        assert_eq!(day1_part1(&[1721, 979, 366, 299, 675, 1456]), Ok(514579));
+    }
+    #[test]
+    fn part2() {
+        assert_eq!(day1_part2(&[1721, 979, 366, 299, 675, 1456]), Ok(241861950));
+    }
+}
+#+END_SRC
+**** Results
+#+BEGIN_SRC
+// Tests
+running 2 tests
+test day1::tests::part1 ... ok
+test day1::tests::part2 ... ok
+
+// Benchmark
+Day1 - Part1/(default)  time:   [249.60 ns 265.85 ns 282.06 ns]
+Day1 - Part2/(default)  time:   [16.515 us 16.849 us 17.220 us]
+#+END_SRC
