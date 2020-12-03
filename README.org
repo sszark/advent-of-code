@@ -9,7 +9,8 @@ or to challenge each other.
 
 * Table of Content
 - [[#2020][2020]]
-  - [[#day-1][Day 1: Report Repair]]
+  - [[#day-1-report-repair][Day 1: Report Repair]]
+  - [[#day-2-password-philosophy][Day2: Password Philosophy]]
 
 * 2020
 ** Day 1: Report Repair
@@ -105,4 +106,212 @@ test day1::tests::part2 ... ok
 // Benchmark
 Day1 - Part1/(default)  time:   [249.60 ns 265.85 ns 282.06 ns]
 Day1 - Part2/(default)  time:   [16.515 us 16.849 us 17.220 us]
+#+END_SRC
+
+** Day 2: Password Philosophy
+https://adventofcode.com/2020/day/2
+
+**** Shared
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+use aoc_runner_derive::{aoc, aoc_generator};
+use itertools::Itertools; // used in generator
+#+END_SRC
+
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+pub struct Entry {
+    low: usize,
+    high: usize,
+    charr: char,
+    pass: String,
+}
+
+impl Entry {
+    fn is_valid(&self) -> bool {
+        let mut counter = 0;
+        for c in self.pass.chars() {
+            // If the tracked character matches. increment the counter
+            if c == self.charr {
+                counter += 1
+            }
+        }
+        
+        // Returns true if it conforms to the password rule
+        counter >= self.low && counter <= self.high
+    }
+
+    fn is_valid_new(&self) -> bool {
+        let mut counter = 0;
+
+        // Increment the counter if the required char matches the index requirement.
+        if self.pass.as_bytes()[self.low - 1] as char == self.charr {
+            counter += 1;
+        }
+
+        // Increment the counter if the required char matches the index requirement.
+        if self.pass.as_bytes()[self.high - 1] as char == self.charr {
+            counter += 1;
+        }
+
+        // Returns true if it conforms to the password rule
+        counter == 1
+    }
+}
+#+END_SRC
+
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+fn day1_find_triple(input: &[i32], target: i32) -> Result<(i32, i32, i32), &'static str> {
+    for (i, head) in input.iter().enumerate() {
+        // Slice that contains all values apart from the head position
+        let headless_input = [&input[..i], &input[i+1..]].concat();
+        // Subtract head value from the target to find a matching pair
+        if let Ok((a, b)) = day1_find_pair(&headless_input, target-head) {
+            return Ok((a, b, *head))
+        }
+    }
+    Err("Could not a derive a triple from input. (bug in 'day1_find_triple')")
+}
+#+END_SRC
+**** Input Generator 1
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+#[aoc_generator(day2)]
+pub fn input_generator(input: &str) -> Vec<Entry> {
+    let string: Vec<String> = input
+        .lines()
+        .flat_map(|x| x.split(':'))
+        .flat_map(|x| x.split('-'))
+        .flat_map(|x| x.split(' ').filter(|&x| !x.is_empty()))
+        .map(|s| s.to_string())
+        .collect();
+
+    let mut entries: Vec<Entry> = vec![];
+    for chunk in string.chunks(4) {
+        entries.push(Entry {
+            low: chunk[0].parse().unwrap(),
+            high: chunk[1].parse().unwrap(),
+            charr: chunk[2].parse().unwrap(),
+            pass: chunk[3].parse().unwrap(),
+        })
+    }
+
+    entries
+}
+#+END_SRC
+**** Input Generator 2
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+#[aoc_generator(day2)]
+pub fn input_generator2(input: &str) -> Vec<Entry> {
+    let pruned_input = input.replace("-", " ").replace(":", "");
+
+    let mut entries: Vec<Entry> = vec![];
+
+    let lines: Vec<&str> = pruned_input.lines().collect();
+    for entry in lines {
+        let x: Vec<&str> = entry.split(' ').collect();
+        entries.push(Entry {
+            low: x[0].parse().unwrap(),
+            high: x[1].parse().unwrap(),
+            charr: x[2].parse().unwrap(),
+            pass: x[3].into(),
+        })
+    }
+    entries
+}
+#+END_SRC
+**** Part One
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+#[aoc(day2, part1)]
+fn day2_part1(input: &[Entry]) -> u32 {
+    let mut counter = 0;
+    for e in input {
+        if e.is_valid() {
+            counter += 1
+        }
+    }
+    counter
+}
+#+END_SRC
+**** Part Two
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+#[aoc(day2, part2)]
+fn day2_part2(input: &[Entry]) -> u32 {
+    let mut counter = 0;
+    for e in input {
+        if e.is_valid_new() {
+            counter += 1
+        }
+    }
+    counter
+}
+#+END_SRC
+**** Tests
+#+BEGIN_SRC rust :tangle 2020/day2.rs
+#[cfg(test)]
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1() {
+        assert_eq!(
+            day2_part1(&[
+                Entry {
+                    low: 1,
+                    high: 3,
+                    charr: 'a',
+                    pass: "abcde".into()
+                },
+                Entry {
+                    low: 1,
+                    high: 3,
+                    charr: 'b',
+                    pass: "cdefg".into()
+                },
+                Entry {
+                    low: 2,
+                    high: 9,
+                    charr: 'c',
+                    pass: "ccccccccc".into()
+                }
+            ]),
+            2
+        );
+    }
+    #[test]
+    fn part2() {
+        assert_eq!(
+            day2_part2(&[
+                Entry {
+                    low: 1,
+                    high: 3,
+                    charr: 'a',
+                    pass: "abcde".into()
+                },
+                Entry {
+                    low: 1,
+                    high: 3,
+                    charr: 'b',
+                    pass: "cdefg".into()
+                },
+                Entry {
+                    low: 2,
+                    high: 9,
+                    charr: 'c',
+                    pass: "ccccccccc".into()
+                }
+            ]),
+            1
+        );
+    }
+}
+#+END_SRC
+**** Results
+#+BEGIN_SRC
+// Tests
+running 2 tests
+test day2::tests::part2 ... ok
+test day2::tests::part1 ... ok
+
+// Benchmark
+Day2 - Part1/(default)  time:   [12.393 us 12.437 us 12.492 us]
+Day2 - Part2/(default)  time:   [1.5879 us 1.5927 us 1.5983 us]
 #+END_SRC
