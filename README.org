@@ -16,16 +16,11 @@ or to challenge each other.
 ** Day 1: Report Repair
 https://adventofcode.com/2020/day/1
 
-**** Shared
 #+BEGIN_SRC rust :tangle 2020/day1.rs
 use aoc_runner_derive::{aoc, aoc_generator};
-#+END_SRC
 
-#+BEGIN_SRC rust :tangle 2020/day1.rs
 const TARGET: i32 = 2020;
-#+END_SRC
 
-#+BEGIN_SRC rust :tangle 2020/day1.rs
 fn day1_find_pair(input: &[i32], target: i32) -> Result<(i32, i32), &'static str> {
     for n in input.iter() {
         // Determine twin size
@@ -37,9 +32,7 @@ fn day1_find_pair(input: &[i32], target: i32) -> Result<(i32, i32), &'static str
     }
     Err("Could not a derive a pair from input. (bug in 'day1_find_pair')")
 }
-#+END_SRC
 
-#+BEGIN_SRC rust :tangle 2020/day1.rs
 fn day1_find_triple(input: &[i32], target: i32) -> Result<(i32, i32, i32), &'static str> {
     for (i, head) in input.iter().enumerate() {
         // Slice that contains all values apart from the head position
@@ -51,18 +44,14 @@ fn day1_find_triple(input: &[i32], target: i32) -> Result<(i32, i32, i32), &'sta
     }
     Err("Could not a derive a triple from input. (bug in 'day1_find_triple')")
 }
-#+END_SRC
-**** Input Generator
-#+BEGIN_SRC rust :tangle 2020/day1.rs
+
 #[aoc_generator(day1)]
 pub fn input_generator(input: &str) -> Vec<i32> {
     let mut x: Vec<i32> = input.lines().map(|x| x.parse().unwrap()).collect();
     x.sort_unstable();
     x
 }
-#+END_SRC
-**** Part One
-#+BEGIN_SRC rust :tangle 2020/day1.rs
+
 #[aoc(day1, part1)]
 fn day1_part1(input: &[i32]) -> Result<i32, &'static str> {
     match day1_find_pair(input, TARGET) {
@@ -70,18 +59,14 @@ fn day1_part1(input: &[i32]) -> Result<i32, &'static str> {
         Err(err) => Err(err)
     }
 }
-#+END_SRC
-**** Part Two
-#+BEGIN_SRC rust :tangle 2020/day1.rs
+
 fn day1_part2(input: &[i32]) -> Result<i32, &'static str> {
     match day1_find_triple(input, TARGET) {
         Ok((a, b, head)) => Ok(a*b*head),
         Err(err) => Err(err)
     }
 }
-#+END_SRC
-**** Tests
-#+BEGIN_SRC rust :tangle 2020/day1.rs
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -114,10 +99,7 @@ https://adventofcode.com/2020/day/2
 **** Shared
 #+BEGIN_SRC rust :tangle 2020/day2.rs
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::Itertools; // used in generator
-#+END_SRC
 
-#+BEGIN_SRC rust :tangle 2020/day2.rs
 pub struct Entry {
     low: usize,
     high: usize,
@@ -156,35 +138,7 @@ impl Entry {
         counter == 1
     }
 }
-#+END_SRC
 
-**** Input Generator 1
-#+BEGIN_SRC rust :tangle 2020/day2.rs
-#[aoc_generator(day2)]
-pub fn input_generator(input: &str) -> Vec<Entry> {
-    let string: Vec<String> = input
-        .lines()
-        .flat_map(|x| x.split(':'))
-        .flat_map(|x| x.split('-'))
-        .flat_map(|x| x.split(' ').filter(|&x| !x.is_empty()))
-        .map(|s| s.to_string())
-        .collect();
-
-    let mut entries: Vec<Entry> = vec![];
-    for chunk in string.chunks(4) {
-        entries.push(Entry {
-            low: chunk[0].parse().unwrap(),
-            high: chunk[1].parse().unwrap(),
-            charr: chunk[2].parse().unwrap(),
-            pass: chunk[3].parse().unwrap(),
-        })
-    }
-
-    entries
-}
-#+END_SRC
-**** Input Generator 2
-#+BEGIN_SRC rust :tangle 2020/day2.rs
 #[aoc_generator(day2)]
 pub fn input_generator2(input: &str) -> Vec<Entry> {
     let pruned_input = input.replace("-", " ").replace(":", "");
@@ -203,9 +157,7 @@ pub fn input_generator2(input: &str) -> Vec<Entry> {
     }
     entries
 }
-#+END_SRC
-**** Part One
-#+BEGIN_SRC rust :tangle 2020/day2.rs
+
 #[aoc(day2, part1)]
 fn day2_part1(input: &[Entry]) -> u32 {
     let mut counter = 0;
@@ -216,9 +168,7 @@ fn day2_part1(input: &[Entry]) -> u32 {
     }
     counter
 }
-#+END_SRC
-**** Part Two
-#+BEGIN_SRC rust :tangle 2020/day2.rs
+
 #[aoc(day2, part2)]
 fn day2_part2(input: &[Entry]) -> u32 {
     let mut counter = 0;
@@ -229,10 +179,7 @@ fn day2_part2(input: &[Entry]) -> u32 {
     }
     counter
 }
-#+END_SRC
-**** Tests
-#+BEGIN_SRC rust :tangle 2020/day2.rs
-#[cfg(test)]
+
 #[cfg(test)]
 mod tests {
     use super::*;
