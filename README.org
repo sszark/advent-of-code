@@ -11,6 +11,7 @@ or to challenge each other.
 - [[#2020][2020]]
   - [[#day-1-report-repair][Day 1: Report Repair]]
   - [[#day-2-password-philosophy][Day 2: Password Philosophy]]
+  - [[#day-3-toboggan-trajectory][Day 3: Toboggan Trajectory]]
 
 * 2020
 ** Day 1: Report Repair
@@ -249,7 +250,7 @@ Day2 - Part1/(default)  time:   [12.393 us 12.437 us 12.492 us]
 Day2 - Part2/(default)  time:   [1.5879 us 1.5927 us 1.5983 us]
 #+END_SRC
 
-** Day 2: Password Philosophy
+** Day 3: Toboggan Trajectory
 https://adventofcode.com/2020/day/3
 
 #+BEGIN_SRC rust :tangle 2020/day3.rs
