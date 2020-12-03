@@ -330,7 +330,7 @@ mod tests {
     }
     #[test]
     fn part2() {
-        let input= input_generator(EXAMPLE);
+        let input = input_generator(EXAMPLE);
         assert_eq!(day3_part2(&input), 336);
     }
 }
