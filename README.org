@@ -96,7 +96,6 @@ Day1 - Part2/(default)  time:   [16.515 us 16.849 us 17.220 us]
 ** Day 2: Password Philosophy
 https://adventofcode.com/2020/day/2
 
-**** Shared
 #+BEGIN_SRC rust :tangle 2020/day2.rs
 use aoc_runner_derive::{aoc, aoc_generator};
 
