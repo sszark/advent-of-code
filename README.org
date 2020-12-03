@@ -10,7 +10,7 @@ or to challenge each other.
 * Table of Content
 - [[#2020][2020]]
   - [[#day-1-report-repair][Day 1: Report Repair]]
-  - [[#day-2-password-philosophy][Day2: Password Philosophy]]
+  - [[#day-2-password-philosophy][Day 2: Password Philosophy]]
 
 * 2020
 ** Day 1: Report Repair
@@ -158,19 +158,6 @@ impl Entry {
 }
 #+END_SRC
 
-#+BEGIN_SRC rust :tangle 2020/day2.rs
-fn day1_find_triple(input: &[i32], target: i32) -> Result<(i32, i32, i32), &'static str> {
-    for (i, head) in input.iter().enumerate() {
-        // Slice that contains all values apart from the head position
-        let headless_input = [&input[..i], &input[i+1..]].concat();
-        // Subtract head value from the target to find a matching pair
-        if let Ok((a, b)) = day1_find_pair(&headless_input, target-head) {
-            return Ok((a, b, *head))
-        }
-    }
-    Err("Could not a derive a triple from input. (bug in 'day1_find_triple')")
-}
-#+END_SRC
 **** Input Generator 1
 #+BEGIN_SRC rust :tangle 2020/day2.rs
 #[aoc_generator(day2)]
